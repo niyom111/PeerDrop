@@ -11,6 +11,19 @@ package com.peerdrop.protocol;
  */
 public class ChunkRequest {
 
-    // TODO: fields (fileId or path, chunkIndex)
-    // TODO: constructor, getters; optionally implement as part of Message payload
+    private final String fileId;
+    private final int chunkIndex;
+
+    public ChunkRequest(String fileId, int chunkIndex) {
+        this.fileId = fileId;
+        this.chunkIndex = chunkIndex;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public int getChunkIndex() {
+        return chunkIndex;
+    }
 }

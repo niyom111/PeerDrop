@@ -37,6 +37,12 @@ public class SocketConnection implements AutoCloseable {
 
     @Override
     public void close() {
-        // TODO: close input, output, then socket; catch and log or suppress
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException ignored) {
+            // Best effort: don't leave sockets open or throw from close()
+        }
     }
 }
