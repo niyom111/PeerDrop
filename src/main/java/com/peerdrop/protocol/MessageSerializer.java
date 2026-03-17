@@ -1,38 +1,30 @@
 package com.peerdrop.protocol;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInputStream;  
+import java.io.DataOutputStream; //DataOutputStream is a helper that lets you write numbers, strings, etc. into a stream as bytes.
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Serializes and deserializes ChunkRequest and ChunkResponse to/from the wire.
- *
- * Wire format:
- * - 1 byte: message type (1 = ChunkRequest, 2 = ChunkResponse)
- * - ChunkRequest: UTF string (fileId), 4 bytes (chunkIndex)
- * - ChunkResponse: 4 bytes (chunkIndex), 4 bytes (data length), N bytes (data), 4 bytes (totalChunks)
- */
+
+//network, files , hardware all work on raw bytes os thus we need to convert
+
 public final class MessageSerializer {
 
     private static final byte TYPE_CHUNK_REQUEST = 1;
     private static final byte TYPE_CHUNK_RESPONSE = 2;
 
-    /**
-     * Writes a ChunkRequest to the stream. Flushes so the other side can read immediately.
-     */
-    public static void writeChunkRequest(OutputStream out, ChunkRequest request) throws IOException {   //where to send the request to(OutputStream)
-        DataOutputStream dataOut = new DataOutputStream(out);
-        dataOut.writeByte(TYPE_CHUNK_REQUEST);
-        dataOut.writeUTF(request.getFileId());
-        dataOut.writeInt(request.getChunkIndex());
-        dataOut.flush();
+   //write: read high level data and convert it into bytes
+   //out is just a pipe. doesnt containt data. i am stupid :()
+   //stream is a way to write data into socket
+    public static void writeChunkRequest(OutputStream out, ChunkRequest request) throws IOException {   
+        DataOutputStream dataOut = new DataOutputStream(out);  //predefined function.
+        dataOut.writeByte(TYPE_CHUNK_REQUEST); 
+        dataOut.writeUTF(request.getFileId());  //converts string to bytes. length of the string followed by the characters.
+        dataOut.writeInt(request.getChunkIndex());  //convert integer to byte
+        dataOut.flush();  //forces data to ve sent immeidately else it will just be there in the buffer
     }
 
-    /**
-     * Writes a ChunkResponse to the stream. Flushes so the other side can read immediately.
-     */
     public static void writeChunkResponse(OutputStream out, ChunkResponse response) throws IOException {
         DataOutputStream dataOut = new DataOutputStream(out);
         dataOut.writeByte(TYPE_CHUNK_RESPONSE);
@@ -43,13 +35,12 @@ public final class MessageSerializer {
         dataOut.flush();
     }
 
-    /**
-     * Reads one message from the stream. Returns either a ChunkRequest or a ChunkResponse.
-     * Blocks until the full message is available. Throws IOException on stream error or EOF.
-     */
-    public static Object read(InputStream in) throws IOException {
+
+
+    //read: read bytes and convert it into high level data
+    public static Object read(InputStream in) throws IOException {   
         DataInputStream dataIn = new DataInputStream(in);
-        byte type = dataIn.readByte();
+        byte type = dataIn.readByte();  //read the first byte. 1 or 2
         switch (type) {
             case TYPE_CHUNK_REQUEST: {
                 String fileId = dataIn.readUTF();
@@ -59,7 +50,7 @@ public final class MessageSerializer {
             case TYPE_CHUNK_RESPONSE: {
                 int chunkIndex = dataIn.readInt();
                 int dataLen = dataIn.readInt();
-                byte[] data = new byte[dataLen];
+                byte[] data = new byte[dataLen];  //create memory to hold data
                 dataIn.readFully(data);
                 int totalChunks = dataIn.readInt();
                 return new ChunkResponse(chunkIndex, data, totalChunks);
