@@ -1,5 +1,7 @@
 package com.peerdrop.file;
 
+import com.peerdrop.protocol.ProtocolConstants;
+
 /**
  * Metadata for one shared file: name, size, and derived chunk count.
  *
@@ -9,7 +11,32 @@ package com.peerdrop.file;
  */
 public class FileMetadata {
 
-    // TODO: fields (fileName or path, long fileSize)
-    // TODO: constructor, getters
-    // TODO: method to compute chunk count: (int) Math.ceil((double) fileSize / ProtocolConstants.CHUNK_SIZE)
+    private final String fileId;
+    private final String fileName;
+    private final long fileSize;
+
+    public FileMetadata(String fileId, String fileName, long fileSize) {
+        this.fileId = fileId;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    /**
+     * Total number of chunks for this file (0-based chunk indices 0 .. getChunkCount()-1).
+     */
+    public int getChunkCount() {
+        return (int) Math.ceil((double) fileSize / ProtocolConstants.CHUNK_SIZE);
+    }
 }

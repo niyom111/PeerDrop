@@ -44,6 +44,7 @@ A **socket** is one end of a TCP connection. Understanding its lifecycle avoids 
 ---
 
 ## 3. Threading Model
+Think of threads as workers doing different tasks at the same time so your app doesn’t get stuck doing one thing.
 
 - **Main thread**: Starts the peer (discovery, server, maybe CLI or UI).  
 - **Server thread**: One thread runs `ServerSocket.accept()` in a loop. For each accepted socket, it hands off to a worker.  

@@ -9,25 +9,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-/**
- * Wraps a TCP Socket with buffered streams of a known size.
- *
- * Responsibilities:
- * - Hold the Socket and expose getInputStream() / getOutputStream() wrapped in
- *   BufferedInputStream / BufferedOutputStream with SOCKET_BUFFER_SIZE.
- * - Provide close() that closes both streams and the socket (idempotent if possible).
- *
- * Use this everywhere we do protocol I/O so buffer sizes are consistent and we don't forget to buffer.
- */
-public class SocketConnection implements AutoCloseable {
 
-    private final Socket socket;
+public class SocketConnection implements AutoCloseable {  //class must have a close method. so it will automatically call a close method.
+
+    private final Socket socket;  //after final keyword , cannot reinitialize.
 
     public SocketConnection(Socket socket) {
         this.socket = socket;
     }
 
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() throws IOException { //may get an error in input output. we need to handle it
         return new BufferedInputStream(socket.getInputStream(), ProtocolConstants.SOCKET_BUFFER_SIZE);
     }
 
@@ -42,7 +33,6 @@ public class SocketConnection implements AutoCloseable {
                 socket.close();
             }
         } catch (IOException ignored) {
-            // Best effort: don't leave sockets open or throw from close()
         }
     }
 }
